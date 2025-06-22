@@ -35,8 +35,8 @@ INSTALL_DATA =
 CCOM=$(BINPREFIX)ccom$(EXEEXT)
 CC0=$(BINPREFIX)cc0$(EXEEXT)
 CC1=$(BINPREFIX)cc1$(EXEEXT)
-CF0=
-CF1=
+CF0=-DPASS1
+CF1=-DPASS2
 
 MDIR=$(top_srcdir)/$(TARGMACH)
 MIPDIR=$(top_srcdir)/mip
@@ -204,7 +204,7 @@ $(CCOM): $(OBJS)
 $(CC0):	$(OBJS0)
 	$(CC) $(LDFLAGS) $(OBJS0) -o $@ $(LIBS)
 
-$(CC1):	$(OBJS1)
+$(CC1):	external.o $(OBJS1)
 	$(CC) $(LDFLAGS) $(OBJS1) -o $@ $(LIBS)
 
 install: $(DEST)
