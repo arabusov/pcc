@@ -15,3 +15,4 @@ variant maintained by urchlay.
   - `minix`: OS-dependent part, here, MINIX 1 and 2 only
   - `mip`: machine-independent part, in `/usr/src/cmd/mip` on UNIX V7
   - `tests`: directory with some compiler tests
+  - `scripts`: developer scripts
