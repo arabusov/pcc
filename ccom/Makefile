@@ -9,13 +9,13 @@ CC = clang
 EXEEXT =
 BINPREFIX = i86-minix-
 CC_FOR_BUILD = clang
-CFLAGS = -Wfatal-errors -Werror
+CFLAGS = -Wfatal-errors -Werror -g -ggdb
 CPPFLAGS = -D_ISOC99_SOURCE \
 	-Dos_$(TARGOS) -Dmach_$(TARGMACH) \
 	-I$(srcdir) -I$(MIPDIR) -I$(MDIR) \
 	-I$(top_srcdir)/$(TARGOS) -I$(COMMONDIR)
 LIBS =
-LDFLAGS =
+LDFLAGS = -g -ggdb
 LEX = flex
 LFLAGS =
 LEX_OUTPUT_ROOT = lex.yy
@@ -63,7 +63,7 @@ OBJS1=  common2.o compat.o external.o           			\
 	match.o optim2.o order.o reader.o      				\
 	regs.o table.o
 
-all: $(DEST)
+all: $(CC0) $(CC1)
 
 LOBJS=	mkext.lo common.lo table.lo
 
