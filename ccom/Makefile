@@ -42,7 +42,7 @@ MDIR=$(top_srcdir)/$(TARGMACH)
 MIPDIR=$(top_srcdir)/mip
 COMMONDIR=$(top_srcdir)/common
 
-DEST=ccom
+DEST=$(CCOM)
 MANPAGE=$(BINPREFIX)ccom
 MKEXT=mkext$(EXEEXT)
 
@@ -63,7 +63,7 @@ OBJS1=  common2.o compat.o external.o           			\
 	match.o optim2.o order.o reader.o      				\
 	regs.o table.o
 
-all: $(OBJS) $(CCOM)
+all: $(DEST)
 
 LOBJS=	mkext.lo common.lo table.lo
 
@@ -216,3 +216,4 @@ install: $(DEST)
 clean:
 	rm -f $(DEST) $(OBJS0) $(OBJS1) $(MKEXT) $(LOBJS) \
 	$(LEX_OUTPUT_ROOT).c scan.c y.tab.[ch] cgram.[ch] external.[ch]
+	rm -f $(CCOM) $(CC0) $(CC1)
