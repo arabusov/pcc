@@ -1,4 +1,4 @@
-/*	 $Id$ */
+/*	 $Id: ccconfig.h,v 1.8 2016/11/06 08:34:06 ragge Exp $ */
 /*
  * Escrit per Antoine Leca pel projecte PCC, 2011-03.
  * Copyright (C) 2011 Anders Magnusson (ragge@ludd.luth.se).
@@ -37,7 +37,7 @@
 /* common cpp predefines */
 #define CPPADD	{ "-D__minix", "-D__ELF__", NULL }
 
-#define	DYNLINKLIB	"/libexec/ld.elf_so"
+#define	DYNLINKLIB	"/usr/libexec/ld.elf_so"
 
 #define CRTEND_T	"crtend.o"
 
@@ -88,7 +88,9 @@
 #define CRTEND_T	0
 
 #define CRTI		0
-#define CRTN		"-lend"
+#define CRTN		"end.a"
+
+#define DEFLIBS         {"-lc", "-lpccsoftfloat", "-lpcc", "-lc", NULL }
 
 #if defined(mach_i386)
 #define CPPMDADD { "-D__i386", "-D__i386__", \
