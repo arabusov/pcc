@@ -1,0 +1,9 @@
+*.o
+*.lo
+mkext
+cgram.c
+cgram.h
+external.c
+external.h
+i86-minix-ccom
+scan.c
