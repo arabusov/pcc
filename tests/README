@@ -1,1 +1,4 @@
 Tests are taken from https://github.com/c-testsuite/c-testsuite.git
+
+All tests suppose to pass. The fail directory is to keep track of the current
+state of the compiler.
