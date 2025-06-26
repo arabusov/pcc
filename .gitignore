@@ -1,11 +1,2 @@
 *.o
-*.lo
-mkext
-cgram.c
-cgram.h
-external.c
-external.h
-i86-minix-ccom
-i86-minix-cc0
-i86-minix-cc1
-scan.c
+a.out
