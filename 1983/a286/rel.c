@@ -1,5 +1,6 @@
 #include "mical.h"
 #include "minix/a.out.h"
+#include "init.h"
 
 /*  Handle output file processing for a.out files */
 

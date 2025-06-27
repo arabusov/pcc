@@ -1,5 +1,6 @@
 #include "mical.h"
 #include "inst.h"
+#include "init.h"
 #include <stdlib.h>
 #include <string.h>
 
@@ -242,7 +243,7 @@ char *argv[];
 
 
 /* Check to see if we can open output file */
-	if(!O_outfile)
+	if(!O_outfile && NULL != Source_name)
 	{
 		if ((end = rindex(Source_name, '.')) == 0 ||
 			strcmp(end, ".a86") != 0)
@@ -254,6 +255,8 @@ char *argv[];
 			strcpy(cp2, ".b");	/* append ".b" to basename */
 		}
 	}
+        if (0 == strcmp(Rel_name, ""))
+                strcpy(Rel_name, "a.out"); /* the legendary default */
 	if ((Rel_file = fopen(Rel_name,"w")) == NULL)
 	{	printf("Can't create output file: %s\n",Rel_name);
 		exit(1);
@@ -307,11 +310,20 @@ init_regs()
 	}
 }
 
-Concat(s1,s2,s3)
-  register char *s1,*s2,*s3;
-  {	while (*s1++ = *s2++);
-	s1--;
-	while (*s1++ = *s3++);
+void
+Concat(dst,s1,s2)
+        char *dst, *s1, *s2;
+{	
+        if (NULL == dst)
+                return;
+        if (NULL != s1) {
+                while (*dst++ = *s1++)
+                        ;
+                dst--;
+        }
+        if (NULL != s2)
+                while (*dst++ = *s2++)
+                        ;
 }
 
 

@@ -6,12 +6,14 @@ CFLAGS = -O0 -DX286 -Iinclude
 CFLAGS += -g -ggdb -ansi
 CFLAGS += -Werror -Wfatal-errors -Wno-implicit-int -Wno-deprecated-non-prototype
 
+LDFLAGS = -g -ggdb
+
 .SUFFIXES: .o .c
 .c.o:
 	$(CC) $(CFLAGS) -c  $<
 
 a286: $(OBJECTS)
-	cc -o a286 $(OBJECTS)
+	cc $(LDFLAGS) -o a286 $(OBJECTS)
 
 $(OBJECTS): mical.h
 
