@@ -69,6 +69,7 @@ struct blist *bounds;	/* list of lengths & bounds for the sdi */
 	return(s->sdi_leng);	/* return the current length */
 }
 
+#if SDI_BOUNDS
 /*
  * insert a new blist element into a blist
  * The blist is sorted by increasing b_length
@@ -93,6 +94,7 @@ struct blist *next;	/* target blist */
 	*p = b;
 	return(*p);
 }
+#endif
 
 /*
  * resolve sdi's between pass1 and pass2
@@ -197,7 +199,9 @@ sdi_free()
 	register struct sdi *s, *t;
 	for (s = sdi_list; s; s = t) {
 		t = s->sdi_next;
+#if SDI_BOUNDS
 		b_free(s->sdi_bounds);
+#endif
 		free(s);
 	}
 	sdi_list = (struct sdi *)0;
