@@ -3,6 +3,8 @@ static	char sccsid[] = "@(#)ld.c 4.4 4/26/81";
  * ld - string table version for VAX
  */
 
+#include <stdlib.h>
+#include <string.h>
 #include <sys/types.h>
 #include <signal.h>
 #include <stdio.h>
@@ -12,6 +14,7 @@ static	char sccsid[] = "@(#)ld.c 4.4 4/26/81";
 #include <ranlib.h>
 #include <stat.h>
 #include <pagsiz.h>
+#include <errno.h>
 
 /*
  * Basic strategy:
@@ -308,7 +311,7 @@ char	*filname;		/* and its name */
 char	*curstr;
 
 char 	get();
-int	delexit();
+void	delexit();
 char	*savestr();
 
 main(argc, argv)
@@ -487,6 +490,7 @@ htoi(p)
 	return (n);
 }
 
+void
 delexit()
 {
 
@@ -625,8 +629,8 @@ load1arg(cp)
 		}
 		while (ldrand())
 			continue;
-		cfree((char *)tab);
-		cfree(tabstr);
+		free((char *)tab);
+		free(tabstr);
 		nextlibp(-1);
 		break;
 
@@ -969,15 +973,13 @@ struct	biobuf toutb;
 setupout()
 {
 	int bss;
-	extern char *sys_errlist[];
-	extern int errno;
 
 	ofilemode = 0777 & ~umask(0);
 	biofd = creat(ofilename, 0666 & ofilemode);
 	if (biofd < 0) {
 		filname = ofilename;		/* kludge */
 		archdr.ar_name[0] = 0;		/* kludge */
-		error(1, sys_errlist[errno]);	/* kludge */
+		error(1, strerror(errno));	/* kludge */
 	} else {
 		struct stat mybuf;		/* kls kludge */
 		fstat(biofd, &mybuf);		/* suppose file exists, wrong*/
@@ -1255,7 +1257,7 @@ tracesym()
  * each relocation datum address by our base position in the new segment.
  */
 load2td(creloc, position, b1, b2)
-	long creloc, offset;
+	long creloc, position;
 	struct biobuf *b1, *b2;
 {
 	register struct nlist *sp;
@@ -1390,8 +1392,8 @@ load2td(creloc, position, b1, b2)
 	bwrite(codep, codesz, b1);
 	if (rflag)
 		bwrite(relp, relsz, b2);
-	cfree((char *)relp);
-	cfree(codep);
+	free((char *)relp);
+	free(codep);
 }
 
 finishout()
@@ -1809,7 +1811,7 @@ off_t loc;
 
 round(v, r)
 	int v;
-	u_long r;
+	unsigned long r;
 {
 
 	r--;
@@ -1874,7 +1876,7 @@ top:
 			put = cnt;
 		bp->b_nleft -= put;
 		to = bp->b_ptr;
-		asm("movc3 r8,(r11),(r7)");
+		/* asm("movc3 r8,(r11),(r7)"); TODO: rewrite for x86 */
 		bp->b_ptr += put;
 		p += put;
 		cnt -= put;
