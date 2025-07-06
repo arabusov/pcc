@@ -204,6 +204,7 @@ struct ins_init { char *opstr; short opnum; } op_codes[] = {
 
 char *Source_name = NULL;
 char File_name[STR_MAX];
+char *tmp_name = "stdin";
 
 Init(argc,argv)
 char *argv[];
@@ -257,6 +258,8 @@ char *argv[];
 	}
         if (0 == strcmp(Rel_name, ""))
                 strcpy(Rel_name, "a.out"); /* the legendary default */
+	if (NULL == Source_name)
+		Source_name = tmp_name;
 	if ((Rel_file = fopen(Rel_name,"w")) == NULL)
 	{	printf("Can't create output file: %s\n",Rel_name);
 		exit(1);

@@ -18,11 +18,13 @@ struct exec filhdr;	/* header for a.out files, contains sizes */
 /* Initialize files for output and write out the header */
 
 Rel_Header()
-  {	char rname[STR_MAX];	/* name of file for relocation commands */
+{
+	char rname[STR_MAX];	/* name of file for relocation commands */
 
-	if ((tout = fopen(Rel_name, "w")) == NULL ||
-		(dout = fopen(Rel_name, "a")) == NULL)
-		Sys_Error("open on output file %s failed", Rel_name);
+	if ((tout = fopen(Rel_name, "w")) == NULL)
+		Sys_Error("(w) open on output file %s failed", Rel_name);
+	if ((dout = fopen(Rel_name, "a")) == NULL)
+		Sys_Error("(a) open on output file %s failed", Rel_name);
 
 	Concat(rname, Source_name, ".textr");
 	rtout = fopen(rname, "w");
@@ -32,7 +34,8 @@ Rel_Header()
 	  Sys_Error("open on output file %s failed", rname);
 
 	fseek(tout, (long)A_TEXTPOS(filhdr), 0);	/* seek to start of text */
-	fseek(dout, (long)A_TEXTPOS(filhdr)+tsize, 0);
+	fseek(dout, (long)A_TEXTPOS(filhdr)+tsize, 0);	/* seek to start of data */
+
 	rtsize = 0;
 	rdsize = 0;
 }
@@ -65,21 +68,24 @@ Fix_Rel()
 	Concat(rname, Source_name, ".textr");
 	if ((fin = fopen(rname, "r")) == NULL)
 		Sys_Error("cannot reopen relocation file %s", rname);
-	while ((i = getc(fin)) != EOF) putc(i,dout);
+	while ((i = getc(fin)) != EOF)
+		putc(i,dout);
 	fclose(fin);
 	unlink(rname);
 
 	Concat(rname, Source_name, ".datar");
 	if ((fin = fopen(rname, "r")) == NULL)
 		Sys_Error("cannot reopen relocation file %s", rname);
-	while ((i = getc(fin)) != EOF) putc(i,dout);
+	while ((i = getc(fin)) != EOF)
+		putc(i,dout);
 	fclose(fin);
 	unlink(rname);
 
 	filhdr.a_syms = Sym_Write(dout);
 
-	fseek(dout, 0L, 0);
+	rewind(dout);
 	fwrite(&filhdr, sizeof(filhdr), 1, dout);
+	fclose(dout);
 }
 
 /* Put_Text -	Write out text to proper portion of file */

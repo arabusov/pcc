@@ -3,10 +3,10 @@ FILES = mical.h inst.h scan.c error.c init.c ins.c \
 OBJECTS = error.o init.o ins.o ps.o rel.o sdi.o sym.o scan.o
 
 CFLAGS = -O0 -DX286 -Iinclude
-CFLAGS += -g -ggdb -ansi -pg
+CFLAGS += -g -ggdb -ansi
 CFLAGS += -Werror -Wfatal-errors -Wno-implicit-int -Wno-deprecated-non-prototype
 
-LDFLAGS = -g -ggdb -pg
+LDFLAGS = -g -ggdb
 
 .SUFFIXES: .o .c
 .c.o:
@@ -20,4 +20,4 @@ $(OBJECTS): mical.h
 init.o ins.o: mical.h inst.h
 
 clean:
-	rm -f $(OBJECTS) a286
+	rm -f $(OBJECTS) a286 *.out

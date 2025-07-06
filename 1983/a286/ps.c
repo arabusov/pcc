@@ -7,10 +7,11 @@ End()
 /* Pass 2 */
 	if (Pass > 1) {				/* On the second pass, */
 		Fix_Rel();			/* patch up object file */
-		return; }
+		return;
+	}
 
 /* Pass 1 */
-	fseek(stdin,0L,0);
+	fseek(stdin, 0L, 0);
 
 	sdi_resolve();	/* resolve span dependent instructions */
 
