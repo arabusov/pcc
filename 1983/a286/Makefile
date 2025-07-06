@@ -3,17 +3,17 @@ FILES = mical.h inst.h scan.c error.c init.c ins.c \
 OBJECTS = error.o init.o ins.o ps.o rel.o sdi.o sym.o scan.o
 
 CFLAGS = -O0 -DX286 -Iinclude
-CFLAGS += -g -ggdb -ansi
+CFLAGS += -g -ggdb -ansi -pg
 CFLAGS += -Werror -Wfatal-errors -Wno-implicit-int -Wno-deprecated-non-prototype
 
-LDFLAGS = -g -ggdb
+LDFLAGS = -g -ggdb -pg
 
 .SUFFIXES: .o .c
 .c.o:
 	$(CC) $(CFLAGS) -c  $<
 
 a286: $(OBJECTS)
-	cc $(LDFLAGS) -o a286 $(OBJECTS)
+	$(CC) $(LDFLAGS) -o a286 $(OBJECTS)
 
 $(OBJECTS): mical.h
 
