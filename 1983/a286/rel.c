@@ -1,6 +1,7 @@
 #include "mical.h"
 #include "minix/a.out.h"
 #include "init.h"
+#include <assert.h>
 
 /*  Handle output file processing for a.out files */
 
@@ -33,6 +34,13 @@ Rel_Header()
 	if (rtout == NULL || rdout == NULL)
 	  Sys_Error("open on output file %s failed", rname);
 
+	filhdr.a_magic[0] = A_MAGIC0;
+	filhdr.a_magic[1] = A_MAGIC1;
+	filhdr.a_flags = A_SEP;
+	filhdr.a_cpu = A_I8086;
+	filhdr.a_hdrlen = sizeof(filhdr);
+
+	fwrite(&filhdr, sizeof(filhdr), 1, tout);
 	fseek(tout, (long)A_TEXTPOS(filhdr), 0);	/* seek to start of text */
 	fseek(dout, (long)A_TEXTPOS(filhdr)+tsize, 0);	/* seek to start of data */
 
@@ -50,11 +58,6 @@ Fix_Rel()
 	fclose(rdout);
 	fclose(tout);
 
-	filhdr.a_magic[0] = A_MAGIC0;
-	filhdr.a_magic[1] = A_MAGIC1;
-	filhdr.a_flags = A_SEP;
-	filhdr.a_cpu = A_I8086;
-	filhdr.a_hdrlen = A_MINHDR;
 	filhdr.a_text = tsize;
 	filhdr.a_data = dsize;
 	filhdr.a_bss = bsize;

@@ -1795,6 +1795,7 @@ off_t loc;
 	if (N_BADMAG(filhdr)) {
 		if (filhdr.a_magic == OARMAG)
 			error(1, "old archive");
+		fprintf(stderr, "Found magic: %o\n", filhdr.a_magic);
 		error(1, "bad magic number");
 	}
 	if (filhdr.a_text&01 || filhdr.a_data&01)

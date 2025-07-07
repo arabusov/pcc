@@ -3,29 +3,34 @@
 #ifndef _AOUT_H
 #define _AOUT_H
 
-struct	exec {			/* a.out header */
-  unsigned char	a_magic[2];	/* magic number */
-  unsigned char	a_flags;	/* flags, see below */
-  unsigned char	a_cpu;		/* cpu id */
-  unsigned char	a_hdrlen;	/* length of header */
-  unsigned char	a_unused;	/* reserved for future use */
-  unsigned short a_version;	/* version stamp (not used at present) */
-  long		a_text;		/* size of text segement in bytes */
-  long		a_data;		/* size of data segment in bytes */
-  long		a_bss;		/* size of bss segment in bytes */
-  long		a_entry;	/* entry point */
-  long		a_total;	/* total memory allocated */
-  long		a_syms;		/* size of symbol table */
+#include <stdint.h>
+
+struct exec
+{				/* a.out header */
+  uint8_t	a_magic[2];	/* magic number */
+  uint8_t	a_flags;	/* flags, see below */
+  uint8_t	a_cpu;		/* cpu id */
+  uint8_t	a_hdrlen;	/* length of header */
+  uint8_t	a_unused;	/* reserved for future use */
+  uint16_t a_version;	/* version stamp (not used at present) */
+  uint32_t	a_text;		/* size of text segement in bytes */
+  uint32_t	a_data;		/* size of data segment in bytes */
+  uint32_t	a_bss;		/* size of bss segment in bytes */
+  uint32_t	a_entry;	/* entry point */
+  uint32_t	a_total;	/* total memory allocated */
+  uint32_t	a_syms;		/* size of symbol table */
 
   /* SHORT FORM ENDS HERE */
-  long		a_trsize;	/* text relocation size */
-  long		a_drsize;	/* data relocation size */
-  long		a_tbase;	/* text relocation base */
-  long		a_dbase;	/* data relocation base */
+  uint32_t	a_trsize;	/* text relocation size */
+  uint32_t	a_drsize;	/* data relocation size */
+  uint32_t	a_tbase;	/* text relocation base */
+  uint32_t	a_dbase;	/* data relocation base */
 };
 
-#define A_MAGIC0      (unsigned char) 0x01
-#define A_MAGIC1      (unsigned char) 0x03
+#define A_MAGIC0      (uint8_t) 0x01
+#define A_MAGIC1      (uint8_t) 0x03
+#define N_MAGIC0	(uint8_t) 0x08;
+#define N_MAGIC1	(uint8_t) 0x01;
 #define BADMAG(X)     ((X).a_magic[0] != A_MAGIC0 ||(X).a_magic[1] != A_MAGIC1)
 
 /* CPU Id of TARGET machine (byte order coded in low order two bits) */
@@ -52,10 +57,10 @@ struct	exec {			/* a.out header */
 #define A_MINHDR	32
 #define	A_TEXTPOS(X)	((long)(X).a_hdrlen)
 #define A_DATAPOS(X)	(A_TEXTPOS(X) + (X).a_text)
-#define	A_HASRELS(X)	((X).a_hdrlen > (unsigned char) A_MINHDR)
-#define A_HASEXT(X)	((X).a_hdrlen > (unsigned char) (A_MINHDR +  8))
-#define A_HASLNS(X)	((X).a_hdrlen > (unsigned char) (A_MINHDR + 16))
-#define A_HASTOFF(X)	((X).a_hdrlen > (unsigned char) (A_MINHDR + 24))
+#define	A_HASRELS(X)	((X).a_hdrlen > (uint8_t) A_MINHDR)
+#define A_HASEXT(X)	((X).a_hdrlen > (uint8_t) (A_MINHDR +  8))
+#define A_HASLNS(X)	((X).a_hdrlen > (uint8_t) (A_MINHDR + 16))
+#define A_HASTOFF(X)	((X).a_hdrlen > (uint8_t) (A_MINHDR + 24))
 #define A_TRELPOS(X)	(A_DATAPOS(X) + (X).a_data)
 #define A_DRELPOS(X)	(A_TRELPOS(X) + (X).a_trsize)
 #define A_SYMPOS(X)	(A_TRELPOS(X) + (A_HASRELS(X) ? \
@@ -63,8 +68,8 @@ struct	exec {			/* a.out header */
 
 struct reloc {
   long r_vaddr;			/* virtual address of reference */
-  unsigned short r_symndx;	/* internal segnum or extern symbol num */
-  unsigned short r_type;	/* relocation type */
+  uint16_t r_symndx;	/* internal segnum or extern symbol num */
+  uint16_t r_type;	/* relocation type */
 };
 
 /* r_tyep values: */
@@ -79,17 +84,17 @@ struct reloc {
 #define R_KBRANCHE	9
 
 /* r_symndx for internal segments */
-#define S_ABS		((unsigned short)-1)
-#define S_TEXT		((unsigned short)-2)
-#define S_DATA		((unsigned short)-3)
-#define S_BSS		((unsigned short)-4)
+#define S_ABS		((uint16_t)-1)
+#define S_TEXT		((uint16_t)-2)
+#define S_DATA		((uint16_t)-3)
+#define S_BSS		((uint16_t)-4)
 
 struct nlist {			/* symbol table entry */
 	union {
 		char      *n_name; /* for use when in-core */
 		long      n_strx;  /* index into file string table */
 	} n_un;
-	unsigned char n_type;  /* type flag, i.e. N_TEXT etc; see below */
+	uint8_t n_type;  /* type flag, i.e. N_TEXT etc; see below */
 	char          n_other;
 	short         n_desc;  /* see <stab.h> */
 	unsigned      n_value; /* value of this symbol (or sdb offset) */
