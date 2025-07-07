@@ -34,8 +34,8 @@ Rel_Header()
 	if (rtout == NULL || rdout == NULL)
 	  Sys_Error("open on output file %s failed", rname);
 
-	filhdr.a_magic[0] = A_MAGIC0;
-	filhdr.a_magic[1] = A_MAGIC1;
+	filhdr.a_magic[0] = O_MAGIC0;
+	filhdr.a_magic[1] = O_MAGIC1;
 	filhdr.a_flags = A_SEP;
 	filhdr.a_cpu = A_I8086;
 	filhdr.a_hdrlen = sizeof(filhdr);
