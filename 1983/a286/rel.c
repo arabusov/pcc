@@ -56,7 +56,6 @@ Fix_Rel()
 
 	fclose(rtout);
 	fclose(rdout);
-	fclose(tout);
 
 	filhdr.a_text = tsize;
 	filhdr.a_data = dsize;
@@ -86,8 +85,9 @@ Fix_Rel()
 
 	filhdr.a_syms = Sym_Write(dout);
 
-	rewind(dout);
-	fwrite(&filhdr, sizeof(filhdr), 1, dout);
+	rewind(tout);
+	fwrite(&filhdr, sizeof(filhdr), 1, tout);
+	fclose(tout);
 	fclose(dout);
 }
 
