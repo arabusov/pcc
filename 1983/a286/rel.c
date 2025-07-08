@@ -60,6 +60,11 @@ Fix_Rel()
 	fclose(rtout);
 	fclose(rdout);
 
+	Cur_csect = Text_csect;
+	Pad_Text((Cur_csect->len_cs != tsize) ? 1 : 0);
+	Cur_csect = Data_csect;
+	Pad_Text((Cur_csect->len_cs != dsize) ? 1 : 0);
+
 	filhdr.a_text = tsize;
 	filhdr.a_data = dsize;
 	filhdr.a_bss = bsize;
@@ -68,6 +73,7 @@ Fix_Rel()
 	filhdr.a_trsize = rtsize;
 	filhdr.a_drsize = rdsize;
 
+	fseek(dout, dsize, SEEK_SET);
 	Concat(rname, Source_name, ".textr");
 	if ((fin = fopen(rname, "r")) == NULL)
 		Sys_Error("cannot reopen relocation file %s", rname);
@@ -116,6 +122,7 @@ Cat(fout)
 	unlink(data_file);
 	fclose(fout);
 }
+
 /* Put_Text -	Write out text to proper portion of file */
 Put_Text(code,length)
  register char *code;
@@ -126,7 +133,6 @@ Put_Text(code,length)
  }
 
 /* Pad_Text -	Write zero bytes to pad out proper portion of file */
-
 Pad_Text(length)
  register length;
  {	register FILE *f;

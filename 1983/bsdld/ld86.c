@@ -757,8 +757,8 @@ load1(libflg, loc)
 	nlocal = sizeof(cursym);
 	savnext = nextsym;
 	loc += N_SYMOFF(filhdr);
-	dseek(&text, loc, filhdr.a_syms);
-	dseek(&reloc, loc + filhdr.a_syms, sizeof(int32_t));
+	dseek(&text, N_SYMOFF(filhdr), filhdr.a_syms);
+	dseek(&reloc, N_STROFF(filhdr), sizeof(int32_t));
 	mget(&size, sizeof(size), &reloc);
 	dseek(&reloc, loc + filhdr.a_syms+sizeof (int32_t), size-sizeof (int32_t));
 	curstr = (char *)malloc(size);
