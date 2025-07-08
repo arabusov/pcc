@@ -29,8 +29,8 @@ struct exec
 
 #define A_MAGIC0      (uint8_t) 0x01
 #define A_MAGIC1      (uint8_t) 0x03
-#define O_MAGIC0	(uint8_t) 0xA0;
-#define O_MAGIC1	(uint8_t) 0x86;
+#define O_MAGIC0	(uint8_t) 0x0a;
+#define O_MAGIC1	(uint8_t) 0x01;
 #define BADMAG(X)     ((X).a_magic[0] != A_MAGIC0 ||(X).a_magic[1] != A_MAGIC1)
 
 /* CPU Id of TARGET machine (byte order coded in low order two bits) */

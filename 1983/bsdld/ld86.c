@@ -730,7 +730,7 @@ load1(libflg, loc)
 {
 	register struct nlist *sp;
 	struct nlist *savnext;
-	int ndef, nlocal, type, size, nsymt;
+	int32_t ndef, nlocal, type, size, nsymt;
 	register int i;
 	off_t maxoff;
 	struct stat stb;
@@ -1472,7 +1472,7 @@ top:
 		take = n - n % BSIZE;
 		lseek(infil, (sp->bno+1)*BSIZE, 0);
 		if (take > sp->size || read(infil, loc, take) != take)
-			error(1, "premature EOF");
+			error(1, "mget: premature EOF");
 		loc += take;
 		n -= take;
 		sp->size -= take;
@@ -1550,7 +1550,7 @@ STREAM *asp;
 	}
 	if ((sp->size -= sizeof(char)) <= 0) {
 		if (sp->size < 0)
-			error(1, "premature EOF");
+			error(1, "get: premature EOF");
 		++fpage.nuser;
 		--sp->pno->nuser;
 		sp->pno = (PAGE *) &fpage;
@@ -1597,7 +1597,7 @@ char *acp;
 	fpage.nuser = 2;
 	dseek(&text, 0L, SARMAG);
 	if (text.size <= 0)
-		error(1, "premature EOF");
+		error(1, "text size < 0, premature EOF");
 	mget((char *)arcmag, SARMAG, &text);
 	arcmag[SARMAG] = 0;
 	if (strcmp(arcmag, ARMAG))

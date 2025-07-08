@@ -1,5 +1,5 @@
 #include "mical.h"
-#include "minix/a.out.h"
+#include "a.out.h"
 #include <stdlib.h>
 #include <string.h>
 
@@ -127,7 +127,7 @@ long Sym_Write(file)
   {	register struct sym_bkt  **sbp1, *sbp2;
 	register char *sp;
 	long size = 0;
-	long slength = 4;
+	int32_t slength = 4;
 	struct nlist s;
 
 	s.n_other = 0;
@@ -143,7 +143,7 @@ long Sym_Write(file)
 	      if (sbp2->attr_s & S_EXT) s.n_type |= N_EXT;
 	      s.n_value = sbp2->value_s;
 	      s.n_un.n_strx = slength;
-	      fwrite(&s, sizeof s, 1, file);
+	      fwrite(&s, sizeof(s), 1, file);
 	      size += sizeof(s);
 	      slength += strlen(sbp2->name_s) + 1;
 	    }
