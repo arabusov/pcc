@@ -122,7 +122,8 @@ Sym_Fix()
 		file in a.out format, while computing size
 		of the symbol segment in output file.
  */
-long Sym_Write(file)
+long
+Sym_Write(file)
   FILE *file;
   {	register struct sym_bkt  **sbp1, *sbp2;
 	register char *sp;

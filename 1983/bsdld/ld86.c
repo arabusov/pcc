@@ -6,13 +6,13 @@ static	char sccsid[] = "@(#)ld.c 4.4 4/26/81";
 #include <stdlib.h>
 #include <string.h>
 #include <sys/types.h>
+#include <sys/stat.h>
 #include <signal.h>
 #include <stdio.h>
 #include <ctype.h>
 #include <ar.h>
 #include <a.out.h>
 #include <ranlib.h>
-#include <stat.h>
 #include <pagsiz.h>
 #include <errno.h>
 
@@ -732,7 +732,7 @@ load1(libflg, loc)
 	struct nlist *savnext;
 	int32_t ndef, nlocal, type, size, nsymt;
 	register int i;
-	off_t maxoff;
+	int32_t maxoff;
 	struct stat stb;
 
 	readhdr(loc);
@@ -745,29 +745,35 @@ load1(libflg, loc)
 		maxoff = atol(archdr.ar_size);
 	else {
 		fstat(infil, &stb);
-		maxoff = stb.st_size;
+		maxoff = (int32_t)stb.st_size;
 	}
-	if (N_STROFF(filhdr) + sizeof (off_t) >= maxoff)
+	if (N_STROFF(filhdr) + sizeof (int32_t) >= maxoff) {
+		fprintf(stderr, "Expect %d, got %d bytes\n",
+			N_STROFF(filhdr) + sizeof (int32_t), maxoff);
 		error(1, "too small (old format .o?)");
+	}
 	ctrel = tsize; cdrel += dsize; cbrel += bsize;
 	ndef = 0;
 	nlocal = sizeof(cursym);
 	savnext = nextsym;
 	loc += N_SYMOFF(filhdr);
 	dseek(&text, loc, filhdr.a_syms);
-	dseek(&reloc, loc + filhdr.a_syms, sizeof(off_t));
-	mget(&size, sizeof (size), &reloc);
-	dseek(&reloc, loc + filhdr.a_syms+sizeof (off_t), size-sizeof (off_t));
+	dseek(&reloc, loc + filhdr.a_syms, sizeof(int32_t));
+	mget(&size, sizeof(size), &reloc);
+	dseek(&reloc, loc + filhdr.a_syms+sizeof (int32_t), size-sizeof (int32_t));
 	curstr = (char *)malloc(size);
 	if (curstr == NULL)
 		error(1, "no space for string table");
-	mget(curstr+sizeof(off_t), size-sizeof(off_t), &reloc);
+	mget(curstr+sizeof(int32_t), size-sizeof(off_t), &reloc);
 	while (text.size > 0) {
 		mget((char *)&cursym, sizeof(struct nlist), &text);
 		if (cursym.n_un.n_strx) {
 			if (cursym.n_un.n_strx<sizeof(size) ||
-			    cursym.n_un.n_strx>=size)
+			    cursym.n_un.n_strx>=size) {
+				fprintf(stderr, "table index 0x%08x\n",
+					cursym.n_un.n_strx);
 				error(1, "bad string table index (pass 1)");
+			}
 			cursym.n_un.n_name = curstr + cursym.n_un.n_strx;
 		}
 		type = cursym.n_type;

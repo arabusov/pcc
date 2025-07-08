@@ -18,14 +18,19 @@ struct exec filhdr;	/* header for a.out files, contains sizes */
 
 /* Initialize files for output and write out the header */
 
+char text_file[] = "textXXXXXX";
+char data_file[] = "dataXXXXXX";
+
 Rel_Header()
 {
 	char rname[STR_MAX];	/* name of file for relocation commands */
 
-	if ((tout = fopen(Rel_name, "w")) == NULL)
-		Sys_Error("(w) open on output file %s failed", Rel_name);
-	if ((dout = fopen(Rel_name, "a")) == NULL)
-		Sys_Error("(a) open on output file %s failed", Rel_name);
+	mkstemp(text_file);
+	mkstemp(data_file);
+	if ((tout = fopen(text_file, "w")) == NULL)
+		Sys_Error("(text) open on tmp file %s failed", Rel_name);
+	if ((dout = fopen(data_file, "w")) == NULL)
+		Sys_Error("(data) open on tmp file %s failed", Rel_name);
 
 	Concat(rname, Source_name, ".textr");
 	rtout = fopen(rname, "w");
@@ -37,14 +42,16 @@ Rel_Header()
 	filhdr.a_magic = NMAGIC;
 
 	fwrite(&filhdr, sizeof(filhdr), 1, tout);
-	fseek(tout, (long)N_TXTOFF(filhdr), 0);	/* seek to start of text */
-	fseek(dout, (long)N_TXTOFF(filhdr)+tsize, 0);	/* seek to start of data */
 
 	rtsize = 0;
 	rdsize = 0;
 }
 
+static void
+Cat(FILE *);
+
 /* Fix_Rel -	Fix up the object file */
+void
 Fix_Rel()
   {	register FILE *fin, *fout;
 	register int i;
@@ -60,8 +67,6 @@ Fix_Rel()
 	/* TODO: test if a non-min header is supported in MINIX */
 	filhdr.a_trsize = rtsize;
 	filhdr.a_drsize = rdsize;
-
-	fseek(dout, (long)(N_TXTOFF(filhdr)+tsize+dsize), 0);
 
 	Concat(rname, Source_name, ".textr");
 	if ((fin = fopen(rname, "r")) == NULL)
@@ -81,12 +86,36 @@ Fix_Rel()
 
 	filhdr.a_syms = Sym_Write(dout);
 
+	fclose(dout);
+
 	rewind(tout);
 	fwrite(&filhdr, sizeof(filhdr), 1, tout);
 	fclose(tout);
-	fclose(dout);
+
+	Cat(fout);
 }
 
+void
+Cat(fout)
+	FILE *fout;
+{
+	int i;
+	if ((tout = fopen(text_file, "r")) == NULL)
+		Sys_Error("(text) open on input file %s failed", Rel_name);
+	if ((dout = fopen(data_file, "r")) == NULL)
+		Sys_Error("(text) open on input file %s failed", Rel_name);
+	if ((fout = fopen(Rel_name, "w")) == NULL)
+		Sys_Error("(a.out) open on output file %s failed", Rel_name);
+	while ((i = getc(tout)) != EOF)
+		putc(i, fout);
+	while ((i = getc(dout)) != EOF)
+		putc(i, fout);
+	fclose(tout);
+	unlink(text_file);
+	fclose(dout);
+	unlink(data_file);
+	fclose(fout);
+}
 /* Put_Text -	Write out text to proper portion of file */
 Put_Text(code,length)
  register char *code;
