@@ -730,9 +730,9 @@ load1(libflg, loc)
 {
 	register struct nlist *sp;
 	struct nlist *savnext;
-	int32_t ndef, nlocal, type, size, nsymt;
+	int32_t ndef, nlocal, type, size, nsymt;        /* TODO: target off_t */
 	register int i;
-	int32_t maxoff;
+	int32_t maxoff;                                 /* TODO: target off_t */
 	struct stat stb;
 
 	readhdr(loc);
@@ -760,11 +760,11 @@ load1(libflg, loc)
 	dseek(&text, N_SYMOFF(filhdr), filhdr.a_syms);
 	dseek(&reloc, N_STROFF(filhdr), sizeof(int32_t));
 	mget(&size, sizeof(size), &reloc);
-	dseek(&reloc, loc + filhdr.a_syms+sizeof (int32_t), size-sizeof (int32_t));
+	dseek(&reloc, loc + filhdr.a_syms+sizeof(int32_t), size-sizeof(int32_t));
 	curstr = (char *)malloc(size);
 	if (curstr == NULL)
 		error(1, "no space for string table");
-	mget(curstr+sizeof(int32_t), size-sizeof(off_t), &reloc);
+	mget(curstr+sizeof(int32_t), size-sizeof(int32_t), &reloc);
 	while (text.size > 0) {
 		mget((char *)&cursym, sizeof(struct nlist), &text);
 		if (cursym.n_un.n_strx) {
@@ -1081,7 +1081,7 @@ char *acp;
 load2(loc)
 long loc;
 {
-	int size;
+	int32_t size;                   /* TODO: int32_t -> target off_t */
 	register struct nlist *sp;
 	register struct local *lp;
 	register int symno, i;
@@ -1102,17 +1102,17 @@ long loc;
 	clocseg = locseg;
 	clocseg->lo_used = 0;
 	symno = -1;
-	loc += N_TXTOFF(filhdr);
+	loc += N_TXTOFF(filhdr);                /* TODO: refactor load{1,2}() */
 	dseek(&text, loc+filhdr.a_text+filhdr.a_data+
-		filhdr.a_trsize+filhdr.a_drsize+filhdr.a_syms, sizeof(off_t));
+		filhdr.a_trsize+filhdr.a_drsize+filhdr.a_syms, sizeof(int32_t));
 	mget(&size, sizeof(size), &text);
 	dseek(&text, loc+filhdr.a_text+filhdr.a_data+
-		filhdr.a_trsize+filhdr.a_drsize+filhdr.a_syms+sizeof(off_t),
-		size - sizeof(off_t));
+		filhdr.a_trsize+filhdr.a_drsize+filhdr.a_syms+sizeof(int32_t),
+		size - sizeof(int32_t));
 	curstr = (char *)malloc(size);
 	if (curstr == NULL)
 		error(1, "out of space reading string table (pass 2)");
-	mget(curstr+sizeof(off_t), size-sizeof(off_t), &text);
+	mget(curstr+sizeof(int32_t), size-sizeof(int32_t), &text);
 	dseek(&text, loc+filhdr.a_text+filhdr.a_data+
 		filhdr.a_trsize+filhdr.a_drsize, filhdr.a_syms);
 	while (text.size > 0) {
@@ -1668,6 +1668,7 @@ lookup()
 	}
 	error(1, "symbol table overflow");
 	/*NOTREACHED*/
+        return NULL;
 }
 
 symfree(saved)
@@ -1885,7 +1886,7 @@ top:
 			put = cnt;
 		bp->b_nleft -= put;
 		to = bp->b_ptr;
-		/* asm("movc3 r8,(r11),(r7)"); TODO: rewrite for x86 */
+                memcpy(to, p, put); /* ORIG: asm("movc3 r8,(r11),(r7)"); */
 		bp->b_ptr += put;
 		p += put;
 		cnt -= put;

@@ -128,7 +128,7 @@ Sym_Write(file)
   {	register struct sym_bkt  **sbp1, *sbp2;
 	register char *sp;
 	long size = 0;
-	int32_t slength = 4;
+	int32_t slength = 4;    /* TODO: use target off_t */
 	struct nlist s;
 
 	s.n_other = 0;
