@@ -1163,8 +1163,10 @@ long loc;
 		}
 		if (funding)
 			continue;
-		if ((sp = *lookup()) == 0)
+		if ((sp = *lookup()) == 0) {
+			fprintf(stderr, "Symbol %s: ", cursym.n_un.n_name);
 			error(1, "internal error: symbol not found");
+		}
 		if (cursym.n_type == N_EXT+N_UNDF) {
 			if (clocseg->lo_used == NSYMPR) {
 				if (++clocseg == &locseg[NSEG])
@@ -1621,7 +1623,7 @@ char *acp;
 struct nlist **
 lookup()
 {
-	register int sh; 
+	register int sh;
 	register struct nlist **hp;
 	register char *cp, *cp1;
 	register struct symseg *gp;
